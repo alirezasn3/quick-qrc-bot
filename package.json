@@ -1,5 +1,5 @@
 {
-  "name": "qrcode-generator-bot",
+  "name": "quick-qrc-bot",
   "version": "1.0.0",
   "devDependencies": {
     "@types/qr-image": "^3.2.5",

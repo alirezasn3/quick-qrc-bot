@@ -6,7 +6,7 @@ This is a Telegram bot that Generates a QR Code image based on the text you send
 Decoding images takes too long for the cloudflare worker and is not supported. But the code exists and is commented out.
 
 ## About
-This bot runs on a [Cloudflare Worker](https://workers.cloudflare.com/)
+This bot runs on a [Cloudflare Worker](https://workers.cloudflare.com/).
 
 ## wrangler.toml sample 
 You can use this config file to host this bot yourself.

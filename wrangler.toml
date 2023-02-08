@@ -1,7 +1,0 @@
-name = "qrcode-generator-bot"
-main = "src/index.js"
-compatibility_date = "2022-11-11"
-node_compat = true
-
-[vars]
-TOKEN = "5797256460:AAEci7vvniYBi650kgzxQwm6pOLlXURlM48"

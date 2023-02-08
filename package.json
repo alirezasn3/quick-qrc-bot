@@ -1,7 +1,8 @@
 {
   "name": "qrcode-generator-bot",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "devDependencies": {
+    "@types/qr-image": "^3.2.5",
     "wrangler": "2.2.1"
   },
   "private": true,

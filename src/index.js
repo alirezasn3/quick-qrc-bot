@@ -1,18 +1,35 @@
 import qr from 'qr-image'
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
+    let responded = false
     try {
       const { message } = await request.json()
 
       // handle invalid message
-      if (!message || message.text === undefined) return new Response(null)
+      if (!message) {
+        responded = true
+        return new Response(null)
+      }
 
       // send is typing status
       fetch(`https://api.telegram.org/bot${env.TOKEN}/sendChatAction?action=upload_photo&chat_id=${message.from.id}`)
 
+      if (!message?.text) {
+        responded = true
+        return new Response(
+          JSON.stringify({
+            method: 'sendMessage',
+            chat_id: message.from.id,
+            text: "please send me some text to generate QR code image"
+          }),
+          { headers: { 'content-type': 'application/json' } }
+        )
+      }
+
       // handle command
       if (message.text === '/start') {
+        responded = true
         return new Response(
           JSON.stringify({
             method: 'sendMessage',
@@ -23,17 +40,21 @@ export default {
         )
       }
 
-      // handle message
+      // handle message (generate qrcode image)
       const image = qr.imageSync(message.text)
       const formData = new FormData()
       formData.append('method', 'sendPhoto')
       formData.append('chat_id', message.from.id)
       formData.append('photo', new Blob([image]))
       formData.append('reply_to_message_id', message.message_id)
+      responded = true
       return new Response(formData)
     } catch (error) {
       console.log(error.message)
+      responded = true
       return new Response(null)
+    } finally {
+      if (!responded) return new Response(null)
     }
   }
 }

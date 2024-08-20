@@ -12,36 +12,42 @@ export default {
         return new Response(null)
       }
 
+      if (message.document) {
+        const res = await fetch(`https://api.telegram.org/bot${env.TOKEN}/getFile?file_id=${message.document.file_id}`)
+        const { ok, result } = await res.json()
+        const fileRes = await fetch(`https://api.telegram.org/file/bot${env.TOKEN}/${result.file_path}`)
+        var text = await fileRes.text()
+      } else if (message?.text?.length) {
+        if (message.text === '/start') {
+          responded = true
+          return new Response(
+            JSON.stringify({
+              method: 'sendMessage',
+              chat_id: message.from.id,
+              text: 'Please send me some text or a text file to generate a QR code image.'
+            }),
+            { headers: { 'content-type': 'application/json' } }
+          )
+        }
+
+        var text = message.text
+      } else {
+        responded = true
+        return new Response(
+          JSON.stringify({
+            method: 'sendMessage',
+            chat_id: message.from.id,
+            text: 'Please send me some text or a text file to generate a QR code image.'
+          }),
+          { headers: { 'content-type': 'application/json' } }
+        )
+      }
+
       // send is typing status
       fetch(`https://api.telegram.org/bot${env.TOKEN}/sendChatAction?action=upload_photo&chat_id=${message.from.id}`)
 
-      if (!message?.text) {
-        responded = true
-        return new Response(
-          JSON.stringify({
-            method: 'sendMessage',
-            chat_id: message.from.id,
-            text: "please send me some text to generate QR code image"
-          }),
-          { headers: { 'content-type': 'application/json' } }
-        )
-      }
-
-      // handle command
-      if (message.text === '/start') {
-        responded = true
-        return new Response(
-          JSON.stringify({
-            method: 'sendMessage',
-            chat_id: message.from.id,
-            text: 'send me some text'
-          }),
-          { headers: { 'content-type': 'application/json' } }
-        )
-      }
-
       // handle message (generate qrcode image)
-      const image = qr.imageSync(message.text)
+      const image = qr.imageSync(text)
       const formData = new FormData()
       formData.append('method', 'sendPhoto')
       formData.append('chat_id', message.from.id)
